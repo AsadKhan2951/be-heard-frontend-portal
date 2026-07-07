@@ -2,13 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "comment": "Proxy API calls to the Railway backend. Replace the destination host with your Railway URL.",
       "source": "/api/:path*",
       "destination": "https://YOUR-RAILWAY-BACKEND.up.railway.app/api/:path*"
     },
     {
-      "comment": "SPA fallback: serve index.html for client-side routes.",
-      "source": "/((?!assets/).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
