@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader, Send } from 'lucide-react';
+import { API_ORIGIN } from '../api';
 
 export default function CampaignDetail() {
   const { campaignId } = useParams();
@@ -18,7 +19,7 @@ export default function CampaignDetail() {
   const loadCampaign = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/campaigns/${campaignId}`, {
+      const res = await fetch(`${API_ORIGIN}/api/campaigns/${campaignId}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (!res.ok) throw new Error('Failed to load campaign');
@@ -36,7 +37,7 @@ export default function CampaignDetail() {
       setGenerating(true);
       setError(null);
 
-      const res = await fetch(`/api/campaigns/${campaignId}/generate-content`, {
+      const res = await fetch(`${API_ORIGIN}/api/campaigns/${campaignId}/generate-content`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, TrendingUp, Zap } from 'lucide-react';
+import { API_ORIGIN } from '../api';
 
 export default function CampaignsList() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function CampaignsList() {
   const loadCampaigns = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/campaigns', {
+      const res = await fetch(`${API_ORIGIN}/api/campaigns`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (!res.ok) throw new Error('Failed to load campaigns');
