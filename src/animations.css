@@ -1,0 +1,224 @@
+/* Page Transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Stagger */
+@keyframes staggerIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Count Up Numbers */
+@keyframes countUp {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Button Scale */
+@keyframes buttonScale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Bottom Sheet Spring */
+@keyframes springUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Skeleton Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Toast Animations */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Utility Classes */
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.4s ease-out;
+}
+
+.animate-staggerIn {
+  animation: staggerIn 0.5s ease-out;
+}
+
+.animate-buttonScale {
+  animation: buttonScale 0.2s ease-out;
+}
+
+.animate-springUp {
+  animation: springUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #111111 0%,
+    #1a1a1a 50%,
+    #111111 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-toastIn {
+  animation: toastIn 0.3s ease-out;
+}
+
+.animate-toastOut {
+  animation: toastOut 0.3s ease-out;
+}
+
+/* Stagger Children */
+.stagger-container > * {
+  animation: staggerIn 0.5s ease-out;
+}
+
+.stagger-container > *:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.stagger-container > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.stagger-container > *:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.stagger-container > *:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.stagger-container > *:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* Smooth Transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+button {
+  transition: all 0.2s ease;
+}
+
+button:active {
+  animation: buttonScale 0.2s ease-out;
+}
+
+/* Hover Effects */
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(191, 255, 0, 0.1);
+}
+
+/* Loading States */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #111111 0%,
+    #1a1a1a 50%,
+    #111111 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 0.5rem;
+}
