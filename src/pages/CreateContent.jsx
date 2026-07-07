@@ -45,6 +45,12 @@ export default function CreateContent() {
     loadBrands();
   }, []);
 
+  const handleContentTypeSelect = (contentType) => {
+    setFormData(prev => ({ ...prev, contentType }));
+    setError(null);
+    setStep(2);
+  };
+
   const loadBrands = async () => {
     try {
       const res = await brands.list();
@@ -160,7 +166,7 @@ export default function CreateContent() {
                   {CONTENT_TYPES.map(type => (
                     <button
                       key={type.id}
-                      onClick={() => setFormData(prev => ({ ...prev, contentType: type.id }))}
+                      onClick={() => handleContentTypeSelect(type.id)}
                       className={`card-hover p-4 text-center transition-all ${
                         formData.contentType === type.id
                           ? 'bg-beheard-hover border-beheard-lime border-2'
