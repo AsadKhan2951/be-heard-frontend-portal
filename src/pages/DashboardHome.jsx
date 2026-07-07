@@ -56,6 +56,22 @@ export default function DashboardHome() {
 
   return (
     <div className="p-4 pb-80px">
+      {brandList.length === 0 ? (
+        <div className="card text-center py-10">
+          <h1 className="text-2xl font-bold mb-2">Create your first brand</h1>
+          <p className="text-beheard-text-secondary mb-4">
+            Set up a brand profile before generating posts, campaigns, or PR content.
+          </p>
+          <button
+            onClick={() => navigate('/brand/new')}
+            className="btn-primary inline-flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Create Brand
+          </button>
+        </div>
+      ) : (
+        <>
       {/* Top bar */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -205,6 +221,8 @@ export default function DashboardHome() {
           ))}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

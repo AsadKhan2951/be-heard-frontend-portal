@@ -135,10 +135,10 @@ function BottomNav() {
               Image Gallery
             </button>
             <button
-              onClick={() => { navigate('/brand/1'); setMoreOpen(false); }}
+              onClick={() => { navigate('/brand/new'); setMoreOpen(false); }}
               className="w-full bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white font-semibold py-3 rounded text-left px-4"
             >
-              Brand Settings
+              Create Brand
             </button>
             <button
               onClick={() => { navigate('/settings'); setMoreOpen(false); }}
@@ -207,6 +207,7 @@ function AppRoutes() {
         <Route path="/creative" element={<ProtectedRoute><CreativeStudio /></ProtectedRoute>} />
         <Route path="/creative/gallery" element={<ProtectedRoute><CreativeGallery /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/brand/new" element={<ProtectedRoute><BrandSettings /></ProtectedRoute>} />
         <Route path="/brand/:brandId" element={<ProtectedRoute><BrandSettings /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/dashboard" />} />

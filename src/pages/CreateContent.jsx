@@ -40,6 +40,7 @@ export default function CreateContent() {
 
   const [generatedContent, setGeneratedContent] = useState(null);
   const [selectedVersion, setSelectedVersion] = useState(0);
+  const hasBrands = brandList.length > 0;
 
   useEffect(() => {
     loadBrands();
@@ -185,6 +186,20 @@ export default function CreateContent() {
             {step === 2 && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Content Details</h2>
+                {!hasBrands ? (
+                  <div className="card text-center py-10">
+                    <h3 className="text-lg font-semibold mb-2">Create a brand first</h3>
+                    <p className="text-beheard-text-secondary mb-4">
+                      Content generation needs a brand profile before it can continue.
+                    </p>
+                    <button
+                      onClick={() => navigate('/brand/new')}
+                      className="btn-primary"
+                    >
+                      Create Brand
+                    </button>
+                  </div>
+                ) : (
                 <div className="space-y-4">
                   <div>
                     <label className="block text-beheard-text-secondary mb-2">Brand</label>
@@ -281,6 +296,7 @@ export default function CreateContent() {
                     </label>
                   </div>
                 </div>
+                )}
               </div>
             )}
 
@@ -409,7 +425,8 @@ export default function CreateContent() {
             ) : (
               <button
                 onClick={() => setStep(step + 1)}
-                className="btn-primary flex items-center gap-2"
+                disabled={step === 2 && !hasBrands}
+                className="btn-primary flex items-center gap-2 disabled:opacity-50"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
