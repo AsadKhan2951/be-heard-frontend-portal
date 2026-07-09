@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { API_ORIGIN } from '../api';
 
 export default function SocialCalendar() {
   const [viewMode, setViewMode] = useState('week');
@@ -23,7 +22,7 @@ export default function SocialCalendar() {
       endDate.setDate(endDate.getDate() + 30);
 
       const res = await fetch(
-        `${API_ORIGIN}/api/calendar?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        `/api/calendar?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
         { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }
       );
       if (!res.ok) throw new Error('Failed to load events');

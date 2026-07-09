@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Loader } from 'lucide-react';
 import { useBrand } from '../BrandContext';
-import { API_ORIGIN } from '../api';
 
 const OBJECTIVES = [
   { id: 'awareness', label: 'Awareness', icon: '👁️' },
@@ -64,7 +63,7 @@ export default function CreateCampaign() {
       setGenerating(true);
       setError(null);
 
-      const res = await fetch(`${API_ORIGIN}/api/campaigns/generate`, {
+      const res = await fetch('/api/campaigns/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +86,7 @@ export default function CreateCampaign() {
   const handleApproveLaunch = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_ORIGIN}/api/campaigns`, {
+      const res = await fetch('/api/campaigns', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

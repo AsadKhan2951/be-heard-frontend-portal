@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Check, Upload } from 'lucide-react';
-import { brands, analytics, API_ORIGIN } from '../api';
+import { brands, analytics } from '../api';
 import { useBrand } from '../BrandContext';
 
 const INDUSTRIES = [
@@ -113,7 +113,7 @@ export default function Onboarding() {
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
 
-      const res = await fetch(`${API_ORIGIN}/api/upload`, {
+      const res = await fetch('/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -213,7 +213,7 @@ export default function Onboarding() {
       setError(null);
 
       // Get OAuth URL with brandId
-      const res = await fetch(`${API_ORIGIN}/api/meta/oauth-url?brandId=${brandId}`, {
+      const res = await fetch(`/api/meta/oauth-url?brandId=${brandId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
