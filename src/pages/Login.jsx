@@ -52,7 +52,7 @@ export default function Login() {
             </div>
           )}
 
-          <div className="mb-4 w-full">
+          <div className="mb-4">
             <label className="block text-beheard-text-secondary mb-2">Email</label>
             <input
               type="email"
@@ -60,20 +60,18 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               placeholder="you@example.com"
-              className="w-full"
               required
             />
           </div>
 
-          <div className="mb-6 w-full">
+          <div className="mb-6">
             <label className="block text-beheard-text-secondary mb-2">Password</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
-              className="w-full"
+              placeholder="••••••••"
               required
             />
           </div>
@@ -95,8 +93,12 @@ export default function Login() {
           </p>
 
           <div className="mt-6 pt-6 border-t border-beheard-border">
-            <p className="text-sm leading-6 text-beheard-text-secondary">
-              Demo login is temporarily hidden until deployed authentication is verified.
+            <p className="text-beheard-text-tertiary text-sm mb-2">Demo credentials:</p>
+            <p className="text-beheard-text-secondary text-sm">
+              Email: <code className="bg-beheard-hover px-1 rounded">demo@beheard.ai</code>
+            </p>
+            <p className="text-beheard-text-secondary text-sm">
+              Password: <code className="bg-beheard-hover px-1 rounded">demo123</code>
             </p>
           </div>
         </form>

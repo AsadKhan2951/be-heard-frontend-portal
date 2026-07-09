@@ -44,7 +44,7 @@ export default function PRLibrary() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20 lg:pb-8">
       {/* Header */}
       <div className="sticky top-0 bg-[#0a0a0a] border-b border-[#1a1a1a] p-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export default function PRLibrary() {
       </div>
 
       {/* PR List */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {loading ? (
           <div className="text-center py-8 text-[#666]">Loading...</div>
         ) : prPieces.length === 0 ? (

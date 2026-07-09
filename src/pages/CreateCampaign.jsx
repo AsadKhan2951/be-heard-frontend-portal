@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Loader } from 'lucide-react';
-import { brands, API_ORIGIN } from '../api';
+import { useBrand } from '../BrandContext';
+import { API_ORIGIN } from '../api';
 
 const OBJECTIVES = [
   { id: 'awareness', label: 'Awareness', icon: '👁️' },
@@ -23,16 +24,14 @@ const CHANNELS = [
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
+  const { brandList, selectedBrandId } = useBrand();
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState(null);
-  const [brandList, setBrandList] = useState([]);
   const [plan, setPlan] = useState(null);
-  const hasBrands = brandList.length > 0;
 
   const [formData, setFormData] = useState({
-    brandId: '',
+    brandId: selectedBrandId || '',
     name: '',
     objective: '',
     startDate: '',
@@ -43,20 +42,8 @@ export default function CreateCampaign() {
   });
 
   useEffect(() => {
-    loadBrands();
-  }, []);
-
-  const loadBrands = async () => {
-    try {
-      const res = await brands.list();
-      setBrandList(res.data);
-      if (res.data.length > 0) {
-        setFormData(prev => ({ ...prev, brandId: res.data[0].id }));
-      }
-    } catch (err) {
-      setError('Failed to load brands');
-    }
-  };
+    setFormData(prev => ({ ...prev, brandId: selectedBrandId || '' }));
+  }, [selectedBrandId]);
 
   const toggleChannel = (channelId) => {
     setFormData(prev => ({
@@ -181,29 +168,15 @@ export default function CreateCampaign() {
             {step === 1 && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Campaign Basics</h2>
-                {!hasBrands ? (
-                  <div className="card text-center py-10">
-                    <h3 className="text-lg font-semibold mb-2">Create a brand first</h3>
-                    <p className="text-beheard-text-secondary mb-4">
-                      Campaign planning needs a brand profile before it can continue.
-                    </p>
-                    <button
-                      onClick={() => navigate('/brand/new')}
-                      className="btn-primary"
-                    >
-                      Create Brand
-                    </button>
-                  </div>
-                ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-beheard-text-secondary mb-2">Brand *</label>
+                    <label className="block text-beheard-text-secondary mb-2">Brand</label>
                     <select
                       value={formData.brandId}
                       onChange={(e) => setFormData(prev => ({ ...prev, brandId: e.target.value }))}
                       className="w-full"
                     >
-                      {brandList.map(brand => (
+                      {brandList && brandList.map(brand => (
                         <option key={brand.id} value={brand.id}>{brand.name}</option>
                       ))}
                     </select>
@@ -272,7 +245,6 @@ export default function CreateCampaign() {
                     />
                   </div>
                 </div>
-                )}
               </div>
             )}
 
@@ -434,8 +406,7 @@ export default function CreateCampaign() {
             ) : (
               <button
                 onClick={() => setStep(step + 1)}
-                disabled={step === 1 && !hasBrands}
-                className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                className="btn-primary flex items-center gap-2"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
+import { BrandProvider, useBrand } from './BrandContext';
+import { BrandGate } from './BrandGate';
+import AppShell from './AppShell';
 import { Home, Plus, Calendar, BarChart3, Menu } from 'lucide-react';
 
 // Auth Pages
@@ -9,7 +12,6 @@ import Signup from './pages/Signup';
 import Onboarding from './pages/Onboarding';
 
 // Main Pages
-import Dashboard from './pages/Dashboard';
 import DashboardHome from './pages/DashboardHome';
 import CreateContent from './pages/CreateContent';
 import ContentLibrary from './pages/ContentLibrary';
@@ -26,11 +28,20 @@ import Analytics from './pages/Analytics';
 import BrandSettings from './pages/BrandSettings';
 import UserSettings from './pages/UserSettings';
 
+function ProtectedPageWrapper({ children, pageTitle }) {
+  return (
+    <AppShell pageTitle={pageTitle}>
+      {children}
+    </AppShell>
+  );
+}
+
 function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const [createOpen, setCreateOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const { selectedBrandId, brandList } = useBrand();
 
   const isActive = (path) => location.pathname === path;
 
@@ -135,10 +146,11 @@ function BottomNav() {
               Image Gallery
             </button>
             <button
-              onClick={() => { navigate('/brand/new'); setMoreOpen(false); }}
-              className="w-full bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white font-semibold py-3 rounded text-left px-4"
+              onClick={() => { if (selectedBrandId) navigate('/brand/' + selectedBrandId); setMoreOpen(false); }}
+              disabled={!selectedBrandId || brandList.length === 0}
+              className="w-full bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white font-semibold py-3 rounded text-left px-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Brand
+              Brand Settings
             </button>
             <button
               onClick={() => { navigate('/settings'); setMoreOpen(false); }}
@@ -159,7 +171,7 @@ function BottomNav() {
   );
 }
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, pageTitle }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -174,11 +186,18 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" />;
   }
 
-  return children;
+  return (
+    <BrandGate>
+      <ProtectedPageWrapper pageTitle={pageTitle}>
+        {children}
+      </ProtectedPageWrapper>
+    </BrandGate>
+  );
 }
 
 function AppRoutes() {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -193,27 +212,26 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/signup" element={user ? <Navigate to="/dashboard" /> : <Signup />} />
-        <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardHome /></ProtectedRoute>} />
-        <Route path="/content/new" element={<ProtectedRoute><CreateContent /></ProtectedRoute>} />
-        <Route path="/content" element={<ProtectedRoute><ContentLibrary /></ProtectedRoute>} />
-        <Route path="/content/:contentId" element={<ProtectedRoute><ContentDetail /></ProtectedRoute>} />
-        <Route path="/campaigns/new" element={<ProtectedRoute><CreateCampaign /></ProtectedRoute>} />
-        <Route path="/campaigns" element={<ProtectedRoute><CampaignsList /></ProtectedRoute>} />
-        <Route path="/campaigns/:campaignId" element={<ProtectedRoute><CampaignDetail /></ProtectedRoute>} />
-        <Route path="/calendar" element={<ProtectedRoute><SocialCalendar /></ProtectedRoute>} />
-        <Route path="/pr/new" element={<ProtectedRoute><CreatePR /></ProtectedRoute>} />
-        <Route path="/pr" element={<ProtectedRoute><PRLibrary /></ProtectedRoute>} />
-        <Route path="/creative" element={<ProtectedRoute><CreativeStudio /></ProtectedRoute>} />
-        <Route path="/creative/gallery" element={<ProtectedRoute><CreativeGallery /></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-        <Route path="/brand/new" element={<ProtectedRoute><BrandSettings /></ProtectedRoute>} />
-        <Route path="/brand/:brandId" element={<ProtectedRoute><BrandSettings /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/dashboard" element={<ProtectedRoute pageTitle="Dashboard"><DashboardHome /></ProtectedRoute>} />
+        <Route path="/content/new" element={<ProtectedRoute pageTitle="Create Content"><CreateContent /></ProtectedRoute>} />
+        <Route path="/content" element={<ProtectedRoute pageTitle="Content Library"><ContentLibrary /></ProtectedRoute>} />
+        <Route path="/content/:contentId" element={<ProtectedRoute pageTitle="Content Detail"><ContentDetail /></ProtectedRoute>} />
+        <Route path="/campaigns/new" element={<ProtectedRoute pageTitle="Create Campaign"><CreateCampaign /></ProtectedRoute>} />
+        <Route path="/campaigns" element={<ProtectedRoute pageTitle="Campaigns"><CampaignsList /></ProtectedRoute>} />
+        <Route path="/campaigns/:campaignId" element={<ProtectedRoute pageTitle="Campaign Detail"><CampaignDetail /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute pageTitle="Social Calendar"><SocialCalendar /></ProtectedRoute>} />
+        <Route path="/pr/new" element={<ProtectedRoute pageTitle="Create PR"><CreatePR /></ProtectedRoute>} />
+        <Route path="/pr" element={<ProtectedRoute pageTitle="PR Library"><PRLibrary /></ProtectedRoute>} />
+        <Route path="/creative" element={<ProtectedRoute pageTitle="Creative Studio"><CreativeStudio /></ProtectedRoute>} />
+        <Route path="/creative/gallery" element={<ProtectedRoute pageTitle="Image Gallery"><CreativeGallery /></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute pageTitle="Analytics"><Analytics /></ProtectedRoute>} />
+        <Route path="/brand/:brandId" element={<ProtectedRoute pageTitle="Brand Settings"><BrandSettings /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute pageTitle="Settings"><UserSettings /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
 
-      {user && <BottomNav />}
+      {user && location.pathname !== '/onboarding' && <BottomNav />}
     </>
   );
 }
@@ -222,7 +240,9 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <BrandProvider>
+          <AppRoutes />
+        </BrandProvider>
       </AuthProvider>
     </Router>
   );

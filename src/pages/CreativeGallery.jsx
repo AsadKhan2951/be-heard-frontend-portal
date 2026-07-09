@@ -36,7 +36,7 @@ export default function CreativeGallery() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20 lg:pb-8">
       {/* Header */}
       <div className="sticky top-0 bg-[#0a0a0a] border-b border-[#1a1a1a] p-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
@@ -69,7 +69,7 @@ export default function CreativeGallery() {
         ) : (
           <>
             {/* Gallery Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
               {images.map(image => (
                 <div
                   key={image.id}

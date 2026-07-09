@@ -46,7 +46,7 @@ export default function Analytics() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20 lg:pb-8">
       {/* Header */}
       <div className="sticky top-0 bg-[#0a0a0a] border-b border-[#1a1a1a] p-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
@@ -100,7 +100,7 @@ export default function Analytics() {
         ) : (
           <>
             {/* Metric Cards */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {analytics.contentMetrics?.map((metric, idx) => (
                 <div key={idx} className="bg-[#111111] border border-[#1a1a1a] rounded p-4">
                   <div className="text-xs text-[#999] mb-2 capitalize">{metric.platform}</div>

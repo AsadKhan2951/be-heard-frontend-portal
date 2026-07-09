@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-// Prefer same-origin /api calls in production and let Vercel proxy them to the
-// backend. VITE_API_BASE_URL remains available as an explicit override.
+// Backend origin. In production, set VITE_API_BASE_URL (Vercel env var) to your
+// Railway backend URL, e.g. https://your-backend.up.railway.app
+// In local dev it stays empty and Vite proxies /api to localhost:3000.
 export const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || '')
-  .replace(/\/+$/, '')    // strip trailing slash(es)
-  .replace(/\/api$/, ''); // tolerate if the URL already ends with /api
+  .replace(/\/+$/, '')
+  .replace(/\/api$/, '');
 
 const API_BASE = `${API_ORIGIN}/api`;
 
@@ -76,7 +77,10 @@ export const images = {
 
 // Analytics
 export const analytics = {
-  getDashboardStats: () => client.get('/dashboard/stats'),
+  getDashboardStats: (brandId) => 
+    brandId 
+      ? client.get('/dashboard/stats', { params: { brandId } })
+      : client.get('/dashboard/stats'),
   get: (brandId) => client.get(`/analytics/${brandId}`)
 };
 

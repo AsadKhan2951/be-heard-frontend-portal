@@ -1,48 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { brands, analytics } from '../api';
+import { useBrand } from '../BrandContext';
+import { analytics } from '../api';
 import { Plus, TrendingUp, Calendar, Zap, BarChart3 } from 'lucide-react';
 
 export default function DashboardHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { brandList, selectedBrandId, setSelectedBrandId, loading } = useBrand();
   const [stats, setStats] = useState(null);
-  const [selectedBrand, setSelectedBrand] = useState(null);
-  const [brandList, setBrandList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const brandsRes = await brands.list();
-      setBrandList(brandsRes.data);
-      
-      if (brandsRes.data.length > 0) {
-        setSelectedBrand(brandsRes.data[0].id);
-      }
-    } catch (err) {
-      console.error('Failed to load data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedBrand) {
+    if (selectedBrandId) {
       loadStats();
     }
-  }, [selectedBrand]);
+  }, [selectedBrandId]);
 
   const loadStats = async () => {
     try {
-      const res = await analytics.getDashboardStats();
+      setStatsLoading(true);
+      const res = await analytics.getDashboardStats(selectedBrandId);
       setStats(res.data);
     } catch (err) {
       console.error('Failed to load stats:', err);
+    } finally {
+      setStatsLoading(false);
     }
   };
 
@@ -55,28 +39,12 @@ export default function DashboardHome() {
   }
 
   return (
-    <div className="p-4 pb-80px">
-      {brandList.length === 0 ? (
-        <div className="card text-center py-10">
-          <h1 className="text-2xl font-bold mb-2">Create your first brand</h1>
-          <p className="text-beheard-text-secondary mb-4">
-            Set up a brand profile before generating posts, campaigns, or PR content.
-          </p>
-          <button
-            onClick={() => navigate('/brand/new')}
-            className="btn-primary inline-flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create Brand
-          </button>
-        </div>
-      ) : (
-        <>
+    <div className="space-y-6">
       {/* Top bar */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">
-            {selectedBrand && brandList.find(b => b.id === selectedBrand)?.name}
+            {selectedBrandId && brandList.find(b => b.id === selectedBrandId)?.name}
           </h1>
           <p className="text-beheard-text-secondary text-sm">Welcome back, {user?.name}</p>
         </div>
@@ -95,9 +63,9 @@ export default function DashboardHome() {
           {brandList.map(brand => (
             <button
               key={brand.id}
-              onClick={() => setSelectedBrand(brand.id)}
+              onClick={() => setSelectedBrandId(brand.id)}
               className={`px-4 py-2 rounded-beheard whitespace-nowrap transition-colors ${
-                selectedBrand === brand.id
+                selectedBrandId === brand.id
                   ? 'bg-beheard-lime text-beheard-black'
                   : 'bg-beheard-card border border-beheard-border text-beheard-text'
               }`}
@@ -110,7 +78,7 @@ export default function DashboardHome() {
 
       {/* Stats cards */}
       {stats && (
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <div className="card">
             <div className="flex items-center justify-between">
               <div>
@@ -156,7 +124,7 @@ export default function DashboardHome() {
       {/* Quick actions */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 lg:grid-cols-3 gap-2">
           <button
             onClick={() => navigate('/content/new?type=post')}
             className="card-hover flex flex-col items-center justify-center py-4"
@@ -221,8 +189,6 @@ export default function DashboardHome() {
           ))}
         </div>
       </div>
-        </>
-      )}
     </div>
   );
 }

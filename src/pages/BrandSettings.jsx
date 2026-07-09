@@ -1,56 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Loader2 } from 'lucide-react';
-import api, { brands } from '../api';
-
-const DEFAULT_COLORS = {
-  primary: '#BFFF00',
-  secondary: '#0a0a0a'
-};
+import api, { API_ORIGIN } from '../api';
 
 export default function BrandSettings() {
   const navigate = useNavigate();
   const { brandId } = useParams();
-  const isCreateMode = !brandId || brandId === 'new';
-
-  const [loading, setLoading] = useState(!isCreateMode);
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingVoice, setTestingVoice] = useState(false);
   const [voiceTest, setVoiceTest] = useState(null);
-  const [error, setError] = useState(null);
+  const [metaConnected, setMetaConnected] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     industry: '',
-    colors: DEFAULT_COLORS,
-    voiceDescription: '',
-    targetAudience: '',
+    colors: {},
+    voice_description: '',
+    target_audience: '',
     competitors: '',
-    sampleContent: ''
+    hashtags_preference: 'sometimes',
+    content_length: 'medium',
+    banned_words: ''
   });
 
   useEffect(() => {
-    if (!isCreateMode) {
-      loadBrand();
-    }
+    loadBrand();
   }, [brandId]);
 
   const loadBrand = async () => {
     try {
-      setLoading(true);
-      const response = await brands.get(brandId);
+      const response = await api.get(`/brands/${brandId}`);
+      const brand = response.data;
+      
       setFormData({
-        name: response.data.name || '',
-        industry: response.data.industry || '',
-        colors: response.data.colors || DEFAULT_COLORS,
-        voiceDescription: response.data.voice_description || '',
-        targetAudience: response.data.target_audience || '',
-        competitors: Array.isArray(response.data.competitors)
-          ? response.data.competitors.join(', ')
-          : '',
-        sampleContent: response.data.sample_content || ''
+        name: brand.name,
+        industry: brand.industry,
+        colors: brand.colors || {},
+        voice_description: brand.voice_description,
+        target_audience: brand.target_audience,
+        competitors: brand.competitors || '',
+        hashtags_preference: brand.hashtags_preference || 'sometimes',
+        content_length: brand.content_length || 'medium',
+        banned_words: brand.banned_words || ''
       });
+      
+      // Check Meta connection status
+      setMetaConnected(!!(brand.meta_page_id && brand.meta_ig_account_id));
+      
+      // Handle OAuth callback
+      if (searchParams.get('meta') === 'connected') {
+        alert('Meta account connected successfully!');
+      } else if (searchParams.get('meta') === 'error') {
+        alert('Failed to connect Meta account: ' + (searchParams.get('message') || 'Unknown error'));
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load brand');
+      console.error('Failed to load brand:', err);
     } finally {
       setLoading(false);
     }
@@ -61,84 +66,64 @@ export default function BrandSettings() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleColorChange = (key, value) => {
-    setFormData(prev => ({
-      ...prev,
-      colors: {
-        ...prev.colors,
-        [key]: value
-      }
-    }));
-  };
-
-  const buildPayload = () => ({
-    name: formData.name.trim(),
-    industry: formData.industry.trim(),
-    colors: formData.colors,
-    voiceDescription: formData.voiceDescription.trim(),
-    targetAudience: formData.targetAudience.trim(),
-    competitors: formData.competitors
-      .split(',')
-      .map(item => item.trim())
-      .filter(Boolean),
-    sampleContent: formData.sampleContent.trim()
-  });
-
-  const handleSave = async () => {
-    if (!formData.name.trim() || !formData.industry.trim()) {
-      setError('Brand name and industry are required');
+  const handleTestVoice = async () => {
+    if (!formData.voice_description) {
+      alert('Please fill in voice description first');
       return;
     }
 
+    setTestingVoice(true);
     try {
-      setSaving(true);
-      setError(null);
-      const payload = buildPayload();
-
-      if (isCreateMode) {
-        const response = await brands.create(payload);
-        navigate(`/brand/${response.data.id}`);
-        return;
-      }
-
-      await brands.update(brandId, payload);
+      const response = await api.post('/content/generate', {
+        brandId,
+        contentType: 'Social Post',
+        platform: 'instagram',
+        topic: 'Test topic',
+        tone: 'Professional',
+        length: 'Short',
+        hashtags: false,
+        cta: false,
+        generateImage: false
+      });
+      setVoiceTest(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to save brand');
+      alert('Failed to test voice: ' + err.message);
+    } finally {
+      setTestingVoice(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await api.put(`/brands/${brandId}`, formData);
+      alert('Brand settings saved!');
+    } catch (err) {
+      alert('Failed to save: ' + err.message);
     } finally {
       setSaving(false);
     }
   };
 
-  const handleTestVoice = async () => {
-    if (isCreateMode) {
-      setError('Create the brand first, then test its voice');
-      return;
-    }
-
-    if (!formData.voiceDescription.trim()) {
-      setError('Add a voice description first');
-      return;
-    }
-
+  const handleConnectMeta = async () => {
     try {
-      setTestingVoice(true);
-      setError(null);
-      const response = await api.post('/content/generate', {
-        brandId,
-        contentType: 'post',
-        platform: 'instagram',
-        topic: 'Test topic',
-        tone: 'professional',
-        length: 'short',
-        hashtags: false,
-        cta: false,
-        generateImage: false
+      setSaving(true);
+      const res = await fetch(`${API_ORIGIN}/api/meta/oauth-url?brandId=${brandId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
-      setVoiceTest(response.data.versions?.[0] || null);
+      
+      if (!res.ok) {
+        throw new Error('Failed to get OAuth URL');
+      }
+      
+      const { url } = await res.json();
+      window.location.href = url;
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to test brand voice');
-    } finally {
-      setTestingVoice(false);
+      console.error('Meta connect error:', err);
+      alert('Failed to connect Meta account');
+      setSaving(false);
     }
   };
 
@@ -152,22 +137,16 @@ export default function BrandSettings() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white pb-32">
+      {/* Header */}
       <div className="sticky top-0 bg-[#0a0a0a] border-b border-[#1a1a1a] p-4 flex items-center gap-3 z-10">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-[#1a1a1a] rounded">
           <ChevronLeft size={20} />
         </button>
-        <h1 className="text-lg font-semibold">
-          {isCreateMode ? 'Create Brand' : 'Brand Settings'}
-        </h1>
+        <h1 className="text-lg font-semibold">Brand Settings</h1>
       </div>
 
       <div className="p-4 space-y-6">
-        {error && (
-          <div className="bg-red-900 border border-red-700 rounded p-3 text-red-100">
-            {error}
-          </div>
-        )}
-
+        {/* Identity Section */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Identity</h2>
           <div className="space-y-3">
@@ -178,7 +157,6 @@ export default function BrandSettings() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Brand name"
                 className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
               />
             </div>
@@ -190,111 +168,57 @@ export default function BrandSettings() {
                 name="industry"
                 value={formData.industry}
                 onChange={handleChange}
-                placeholder="Industry"
                 className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
               />
             </div>
           </div>
         </div>
 
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Brand Colors</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium mb-2">Primary Color</label>
-              <div className="flex gap-2">
-                <input
-                  type="color"
-                  value={formData.colors.primary}
-                  onChange={(e) => handleColorChange('primary', e.target.value)}
-                  className="w-16 h-12 rounded cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={formData.colors.primary}
-                  onChange={(e) => handleColorChange('primary', e.target.value)}
-                  className="flex-1 bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Secondary Color</label>
-              <div className="flex gap-2">
-                <input
-                  type="color"
-                  value={formData.colors.secondary}
-                  onChange={(e) => handleColorChange('secondary', e.target.value)}
-                  className="w-16 h-12 rounded cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={formData.colors.secondary}
-                  onChange={(e) => handleColorChange('secondary', e.target.value)}
-                  className="flex-1 bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* Voice Section */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Brand Voice</h2>
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-2">Voice Description</label>
               <textarea
-                name="voiceDescription"
-                value={formData.voiceDescription}
+                name="voice_description"
+                value={formData.voice_description}
                 onChange={handleChange}
-                placeholder="Describe tone, personality, and values"
+                placeholder="How does your brand speak? (tone, personality, values)"
                 rows={4}
                 className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white placeholder-[#666]"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Sample Content</label>
-              <textarea
-                name="sampleContent"
-                value={formData.sampleContent}
-                onChange={handleChange}
-                placeholder="Paste sample copy written in your brand voice"
-                rows={4}
-                className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white placeholder-[#666]"
-              />
-            </div>
-
-            {!isCreateMode && (
-              <button
-                onClick={handleTestVoice}
-                disabled={testingVoice}
-                className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white font-semibold py-3 rounded hover:bg-[#2a2a2a] disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {testingVoice ? <Loader2 size={18} className="animate-spin" /> : null}
-                Test Voice
-              </button>
-            )}
+            <button
+              onClick={handleTestVoice}
+              disabled={testingVoice}
+              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white font-semibold py-3 rounded hover:bg-[#2a2a2a] disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {testingVoice ? <Loader2 size={18} className="animate-spin" /> : null}
+              Test Voice
+            </button>
 
             {voiceTest && (
               <div className="bg-[#111111] border border-[#BFFF00] rounded p-4">
-                <div className="text-sm text-[#999] mb-2">Sample Output</div>
-                <p className="text-sm text-[#ccc] whitespace-pre-wrap">{voiceTest}</p>
+                <div className="text-sm text-[#999] mb-2">Sample Post:</div>
+                <p className="text-sm text-[#ccc]">{voiceTest.body?.[0] || voiceTest.body}</p>
               </div>
             )}
           </div>
         </div>
 
+        {/* Audience Section */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Audience & Market</h2>
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-2">Target Audience</label>
               <textarea
-                name="targetAudience"
-                value={formData.targetAudience}
+                name="target_audience"
+                value={formData.target_audience}
                 onChange={handleChange}
-                placeholder="Who are you trying to reach?"
+                placeholder="Who is your ideal customer?"
                 rows={3}
                 className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white placeholder-[#666]"
               />
@@ -306,7 +230,7 @@ export default function BrandSettings() {
                 name="competitors"
                 value={formData.competitors}
                 onChange={handleChange}
-                placeholder="Comma-separated competitor names"
+                placeholder="Who are your main competitors?"
                 rows={3}
                 className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white placeholder-[#666]"
               />
@@ -314,6 +238,75 @@ export default function BrandSettings() {
           </div>
         </div>
 
+        {/* Content Preferences */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Content Preferences</h2>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-2">Hashtags</label>
+              <select
+                name="hashtags_preference"
+                value={formData.hashtags_preference}
+                onChange={handleChange}
+                className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
+              >
+                <option value="always">Always include</option>
+                <option value="sometimes">Sometimes include</option>
+                <option value="never">Never include</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Content Length</label>
+              <select
+                name="content_length"
+                value={formData.content_length}
+                onChange={handleChange}
+                className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
+              >
+                <option value="short">Short</option>
+                <option value="medium">Medium</option>
+                <option value="long">Long</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Banned Words</label>
+              <textarea
+                name="banned_words"
+                value={formData.banned_words}
+                onChange={handleChange}
+                placeholder="Words to avoid (comma-separated)"
+                rows={2}
+                className="w-full bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white placeholder-[#666]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Connected Channels */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Connected Channels</h2>
+          <div className="space-y-2">
+            <div className="bg-[#111111] border border-[#1a1a1a] rounded p-4 flex items-center justify-between">
+              <div>
+                <div className="font-medium">Instagram & Facebook</div>
+                <div className={`text-sm ${metaConnected ? 'text-[#BFFF00]' : 'text-[#666]'}`}>
+                  {metaConnected ? 'Connected' : 'Not connected'}
+                </div>
+              </div>
+              <button
+                onClick={handleConnectMeta}
+                disabled={saving}
+                className="text-[#BFFF00] hover:underline text-sm font-medium disabled:opacity-50"
+              >
+                {metaConnected ? 'Reconnect' : 'Connect'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Save Button (Sticky) */}
         <div className="fixed bottom-0 left-0 right-0 bg-[#0a0a0a] border-t border-[#1a1a1a] p-4 flex gap-2">
           <button
             onClick={() => navigate(-1)}
@@ -327,7 +320,7 @@ export default function BrandSettings() {
             className="flex-1 bg-[#BFFF00] text-black font-semibold py-3 rounded hover:bg-[#a8e600] disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {saving ? <Loader2 size={18} className="animate-spin" /> : null}
-            {isCreateMode ? 'Create Brand' : 'Save'}
+            Save Changes
           </button>
         </div>
       </div>

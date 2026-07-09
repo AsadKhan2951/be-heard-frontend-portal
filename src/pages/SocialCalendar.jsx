@@ -85,7 +85,7 @@ export default function SocialCalendar() {
   const isToday = (date) => date.toDateString() === new Date().toDateString();
 
   return (
-    <div className="p-4 pb-80px">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Social Calendar</h1>
@@ -130,7 +130,7 @@ export default function SocialCalendar() {
 
       {/* Week View */}
       {viewMode === 'week' && (
-        <div className="space-y-2 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-2 mb-6">
           {weekDays.map((day, i) => {
             const dayEvents = getEventsForDay(day);
             const today = isToday(day);
