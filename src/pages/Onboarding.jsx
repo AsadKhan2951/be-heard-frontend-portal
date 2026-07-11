@@ -227,7 +227,7 @@ export default function Onboarding() {
       window.location.href = url;
     } catch (err) {
       console.error('Meta connect error:', err);
-      setError('Failed to connect Meta account');
+      setError('Meta connection is not configured yet — click "Skip for now" to continue. (Requires a Facebook App: META_APP_ID / META_APP_SECRET.)');
       setSaving(false);
     }
   };

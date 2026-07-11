@@ -39,7 +39,9 @@ export const brands = {
   create: (data) => client.post('/brands', data),
   list: () => client.get('/brands'),
   get: (brandId) => client.get(`/brands/${brandId}`),
-  update: (brandId, data) => client.put(`/brands/${brandId}`, data)
+  update: (brandId, data) => client.put(`/brands/${brandId}`, data),
+  prefill: (brandId) => client.post(`/brands/${brandId}/prefill`).then(r => r.data),
+  regenerateProfile: (brandId) => client.post(`/brands/${brandId}/regenerate-profile`).then(r => r.data)
 };
 
 // Content
@@ -81,7 +83,8 @@ export const analytics = {
     brandId 
       ? client.get('/dashboard/stats', { params: { brandId } })
       : client.get('/dashboard/stats'),
-  get: (brandId) => client.get(`/analytics/${brandId}`)
+  get: (brandId) => client.get(`/analytics/${brandId}`),
+  generateContent: (data) => client.post('/content/generate', data).then(r => r.data)
 };
 
 // Publishing (legacy)
