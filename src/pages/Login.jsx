@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { LogIn } from 'lucide-react';
+import Logo from '../Logo';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,9 +37,8 @@ export default function Login() {
     <div className="min-h-screen bg-beheard-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-4xl font-bold mb-2">
-            <span className="text-beheard-lime">Be</span>
-            <span className="text-beheard-text">Heard</span>
+          <div className="flex justify-center mb-3">
+            <Logo size="lg" />
           </div>
           <p className="text-beheard-text-secondary">AI-powered marketing platform</p>
         </div>

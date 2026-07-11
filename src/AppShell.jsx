@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useBrand } from './BrandContext';
 import { useAuth } from './AuthContext';
+import Logo from './Logo';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/dashboard', icon: Home },
@@ -51,10 +52,7 @@ export default function AppShell({ children, pageTitle }) {
       <div className="hidden lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-[240px] lg:bg-[#0a0a0a] lg:border-r lg:border-[#1a1a1a] lg:flex lg:flex-col lg:z-50">
         {/* Logo */}
         <div className="p-6 border-b border-[#1a1a1a]">
-          <div className="text-xl font-bold">
-            <span className="text-white">Be</span>
-            <span className="text-[#BFFF00]">Heard.</span>
-          </div>
+          <Logo size="md" />
         </div>
 
         {/* Brand Switcher */}
@@ -137,10 +135,7 @@ export default function AppShell({ children, pageTitle }) {
       <div className="lg:hidden pb-20">
         {/* Mobile Header */}
         <div className="sticky top-0 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-4 flex items-center justify-between z-40">
-          <div className="text-lg font-bold">
-            <span className="text-white">Be</span>
-            <span className="text-[#BFFF00]">Heard.</span>
-          </div>
+          <Logo size="sm" />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 hover:bg-[#111111] rounded"

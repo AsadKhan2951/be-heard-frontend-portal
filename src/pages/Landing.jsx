@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles, BarChart2, Megaphone, Newspaper, Palette, Calendar } from 'lucide-react';
+import Logo from '../Logo';
 
 const FEATURES = [
   { icon: Sparkles, title: 'AI Content Generation', desc: 'Claude-powered captions, posts, threads, and scripts tailored to your brand voice.' },
@@ -18,12 +19,7 @@ export default function Landing() {
     <div className="min-h-screen bg-[#0a0a0a] text-[#f0f0f0]">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1a1a1a] max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#BFFF00] text-[#0a0a0a] flex items-center justify-center font-bold text-sm">
-            BH
-          </div>
-          <span className="font-bold text-[#f0f0f0] text-lg">BeHeard</span>
-        </div>
+        <Logo size="md" />
         <button
           onClick={() => navigate('/login')}
           className="px-4 py-2 rounded-lg bg-[#BFFF00] text-[#0a0a0a] text-sm font-semibold hover:bg-[#a8e600] transition-colors"
