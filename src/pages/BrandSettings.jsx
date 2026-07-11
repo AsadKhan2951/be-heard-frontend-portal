@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Loader2 } from 'lucide-react';
-import api from '../api';
+import api, { API_ORIGIN } from '../api';
 
 export default function BrandSettings() {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ export default function BrandSettings() {
   const handleConnectMeta = async () => {
     try {
       setSaving(true);
-      const res = await fetch(`/api/meta/oauth-url?brandId=${brandId}`, {
+      const res = await fetch(`${API_ORIGIN}/api/meta/oauth-url?brandId=${brandId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -202,7 +202,7 @@ export default function BrandSettings() {
             {voiceTest && (
               <div className="bg-[#111111] border border-[#BFFF00] rounded p-4">
                 <div className="text-sm text-[#999] mb-2">Sample Post:</div>
-                <p className="text-sm text-[#ccc]">{voiceTest.versions?.[0] || voiceTest.body?.[0] || voiceTest.body}</p>
+                <p className="text-sm text-[#ccc]">{voiceTest.body?.[0] || voiceTest.body}</p>
               </div>
             )}
           </div>

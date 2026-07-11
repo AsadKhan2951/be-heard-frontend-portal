@@ -10,6 +10,7 @@ import { Home, Plus, Calendar, BarChart3, Menu } from 'lucide-react';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Onboarding from './pages/Onboarding';
+import Landing from './pages/Landing';
 
 // Main Pages
 import DashboardHome from './pages/DashboardHome';
@@ -228,10 +229,10 @@ function AppRoutes() {
         <Route path="/analytics" element={<ProtectedRoute pageTitle="Analytics"><Analytics /></ProtectedRoute>} />
         <Route path="/brand/:brandId" element={<ProtectedRoute pageTitle="Brand Settings"><BrandSettings /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute pageTitle="Settings"><UserSettings /></ProtectedRoute>} />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/" element={<Landing />} />
       </Routes>
 
-      {user && location.pathname !== '/onboarding' && <BottomNav />}
+      {user && location.pathname !== '/onboarding' && location.pathname !== '/' && <BottomNav />}
     </>
   );
 }

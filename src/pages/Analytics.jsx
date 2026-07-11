@@ -3,22 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, RefreshCw } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../api';
-import { useBrand } from '../BrandContext';
 
 export default function Analytics() {
   const navigate = useNavigate();
-  const { brandList, selectedBrandId } = useBrand();
   const [brandId, setBrandId] = useState('');
   const [dateRange, setDateRange] = useState('7');
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
-
-  useEffect(() => {
-    if (!brandId && selectedBrandId) {
-      setBrandId(selectedBrandId);
-    }
-  }, [brandId, selectedBrandId]);
 
   useEffect(() => {
     if (brandId) {
@@ -81,11 +73,6 @@ export default function Analytics() {
             className="bg-[#111111] border border-[#1a1a1a] rounded p-3 text-white"
           >
             <option value="">Select brand</option>
-            {brandList.map((brand) => (
-              <option key={brand.id} value={brand.id}>
-                {brand.name}
-              </option>
-            ))}
           </select>
           <select
             value={dateRange}

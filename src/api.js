@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const API_BASE = '/api';
+// Backend origin. In production, set VITE_API_BASE_URL (Vercel env var) to your
+// Railway backend URL, e.g. https://your-backend.up.railway.app
+// In local dev it stays empty and Vite proxies /api to localhost:3000.
+export const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || '')
+  .replace(/\/+$/, '')
+  .replace(/\/api$/, '');
+
+const API_BASE = `${API_ORIGIN}/api`;
 
 const client = axios.create({
   baseURL: API_BASE,
@@ -32,9 +39,7 @@ export const brands = {
   create: (data) => client.post('/brands', data),
   list: () => client.get('/brands'),
   get: (brandId) => client.get(`/brands/${brandId}`),
-  update: (brandId, data) => client.put(`/brands/${brandId}`, data),
-  regenerateProfile: (brandId) =>
-    client.post(`/brands/${brandId}/regenerate-profile`)
+  update: (brandId, data) => client.put(`/brands/${brandId}`, data)
 };
 
 // Content
@@ -76,10 +81,7 @@ export const analytics = {
     brandId 
       ? client.get('/dashboard/stats', { params: { brandId } })
       : client.get('/dashboard/stats'),
-  get: (brandId, dateRange) =>
-    client.get('/analytics', { params: { brandId, dateRange } }),
-  generateContent: (data) =>
-    client.post('/content/generate', data)
+  get: (brandId) => client.get(`/analytics/${brandId}`)
 };
 
 // Publishing (legacy)
