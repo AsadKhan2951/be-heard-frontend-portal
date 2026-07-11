@@ -92,7 +92,12 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="px-6 py-6 border-t border-[#1a1a1a] text-center">
-        <p className="text-xs text-[#555555]">© 2025 BeHeard · AI Marketing Platform</p>
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <button onClick={() => navigate('/privacy')} className="text-xs text-[#888888] hover:text-[#f0f0f0] transition-colors">Privacy Policy</button>
+          <span className="text-[#333]">·</span>
+          <button onClick={() => navigate('/terms')} className="text-xs text-[#888888] hover:text-[#f0f0f0] transition-colors">Terms of Service</button>
+        </div>
+        <p className="text-xs text-[#555555]">© 2026 BeHeard · AI Marketing Platform</p>
       </footer>
     </div>
   );
