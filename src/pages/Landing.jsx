@@ -19,7 +19,7 @@ export default function Landing() {
     <div className="min-h-screen bg-[#0a0a0a] text-[#f0f0f0]">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-[#1a1a1a] max-w-6xl mx-auto">
-        <Logo size="md" />
+        <Logo size="lg" />
         <button
           onClick={() => navigate('/login')}
           className="px-4 py-2 rounded-lg bg-[#BFFF00] text-[#0a0a0a] text-sm font-semibold hover:bg-[#a8e600] transition-colors"
