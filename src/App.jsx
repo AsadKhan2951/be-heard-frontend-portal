@@ -235,8 +235,6 @@ function AppRoutes() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/" element={<Landing />} />
       </Routes>
-
-      {user && !['/', '/onboarding', '/privacy', '/terms'].includes(location.pathname) && <BottomNav />}
     </>
   );
 }

@@ -25,7 +25,7 @@ const MOBILE_NAV_ITEMS = [
   { label: 'Create', path: '/content', icon: FileText },
   { label: 'Calendar', path: '/calendar', icon: Calendar },
   { label: 'Analytics', path: '/analytics', icon: BarChart3 },
-  { label: 'More', path: '/more', icon: Menu }
+  { label: 'Settings', path: '/settings', icon: Menu }
 ];
 
 export default function AppShell({ children, pageTitle }) {
@@ -52,7 +52,7 @@ export default function AppShell({ children, pageTitle }) {
       <div className="hidden lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-[240px] lg:bg-[#0a0a0a] lg:border-r lg:border-[#1a1a1a] lg:flex lg:flex-col lg:z-50">
         {/* Logo */}
         <div className="p-6 border-b border-[#1a1a1a]">
-          <Logo size="md" />
+          <Logo size="lg" />
         </div>
 
         {/* Brand Switcher */}
@@ -126,13 +126,13 @@ export default function AppShell({ children, pageTitle }) {
         </div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-8 py-6">
+        <div className="max-w-7xl mx-auto px-8 pt-6 pb-32">
           {children}
         </div>
       </div>
 
       {/* Mobile Layout */}
-      <div className="lg:hidden pb-20">
+      <div className="lg:hidden pb-28">
         {/* Mobile Header */}
         <div className="sticky top-0 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-4 flex items-center justify-between z-40">
           <Logo size="sm" />

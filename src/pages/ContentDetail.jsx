@@ -46,7 +46,7 @@ export default function ContentDetail() {
       await contentAPI.publish(contentId, platform);
       await loadContent();
     } catch (err) {
-      setError('Failed to publish');
+      setError(err.response?.data?.error || err.response?.data?.details || err.message || 'Failed to publish');
     } finally {
       setPublishing(false);
     }
