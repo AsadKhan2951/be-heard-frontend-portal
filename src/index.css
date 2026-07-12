@@ -162,3 +162,109 @@ input:focus, textarea:focus, select:focus {
     display: flex;
   }
 }
+
+/* ============================================
+   Landing page animations & effects
+   ============================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll reveal — hidden until in view, then eases up */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating background glow orbs */
+@keyframes lp-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(0, -30px) scale(1.06); }
+}
+@keyframes lp-float-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(24px, 26px); }
+}
+.lp-orb      { animation: lp-float 13s ease-in-out infinite; }
+.lp-orb-slow { animation: lp-float-slow 17s ease-in-out infinite; }
+
+/* Animated gradient text for the lime headline word */
+@keyframes lp-gradient {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.lp-gradient-text {
+  background: linear-gradient(90deg, #BFFF00, #e6ff8a, #BFFF00, #9be000, #BFFF00);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: lp-gradient 5s linear infinite;
+  filter: drop-shadow(0 0 26px rgba(191, 255, 0, 0.28));
+}
+
+/* Badge pulse dot */
+@keyframes lp-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.75); }
+}
+.lp-pulse-dot { animation: lp-pulse 2s ease-in-out infinite; }
+
+/* Shine sweep across buttons on hover */
+.lp-shine { position: relative; overflow: hidden; }
+.lp-shine::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.65s ease;
+}
+.lp-shine:hover::after { left: 130%; }
+
+/* Feature card hover lift + lime glow */
+.lp-card {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease,
+              background-color 0.35s ease;
+}
+.lp-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(191, 255, 0, 0.4);
+  box-shadow: 0 14px 44px -12px rgba(191, 255, 0, 0.18);
+  background-color: #141414;
+}
+.lp-card-icon { transition: transform 0.35s ease, background-color 0.35s ease; }
+.lp-card:hover .lp-card-icon {
+  background-color: rgba(191, 255, 0, 0.16);
+  transform: scale(1.1);
+}
+
+/* Arrow nudge on hover */
+.lp-arrow { transition: transform 0.3s ease; }
+.group:hover .lp-arrow { transform: translateX(4px); }
+
+/* Lift primary buttons slightly on hover */
+.lp-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.lp-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -8px rgba(191, 255, 0, 0.4);
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; transition: none; }
+  .lp-orb, .lp-orb-slow, .lp-gradient-text, .lp-pulse-dot { animation: none !important; }
+  .lp-card:hover, .lp-lift:hover { transform: none; }
+}
